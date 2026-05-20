@@ -1,0 +1,210 @@
+{
+  "kode_kelompok": "K08",
+  "topik_pilihan": 2,
+  "nama_topik": "Recurrent Neural Network (RNN) / GRU / LSTM",
+  "judul_proyek": "Prediksi Waktu Tempuh Jangka Panjang Pada Dataset Taiwan Freeway Menggunakan Arsitektur Long Short-Term Memory (LSTM)",
+  "abstrak_singkat": "Proyek ini mengimplementasikan arsitektur LSTM untuk memprediksi waktu tempuh jangka panjang (t+12 atau 1 jam) pada tiga rute Taiwan Freeway dengan interval 5 menit sepanjang 2018. Model utama dibandingkan dengan baseline non-sekuensial (XGBoost dan Regresi Linier) menggunakan metrik MAE dan RMSE. Evaluasi juga menganalisis variabilitas performa pada jam sibuk vs non-sibuk serta perbedaan panjang rute untuk klaim bonus B1 dan B3.",
+  "metode_ai": [
+    {
+      "nama": "Long Short-Term Memory (LSTM)",
+      "peran": "utama",
+      "varian": "Stacked LSTM 2 layer, 64 hidden units per layer, dropout 0.2 antar layer, optimizer Adam, learning rate scheduler ReduceLROnPlateau, lookback 24 time steps (2 jam), horizon 12 time steps (1 jam)",
+      "catatan": "Model inti yang dievaluasi untuk klaim performa utama. Dirancang menangkap dependensi temporal jangka panjang pada fitur kecepatan, volume, dan waktu. Dilatih secara terpisah pada masing-masing dari tiga rute untuk analisis generalisasi."
+    },
+    {
+      "nama": "XGBoost Regressor",
+      "peran": "baseline",
+      "varian": "n_estimators=200, max_depth=5, learning_rate=0.1, subsample=0.8, early_stopping_rounds=10, fitur lag manual (t-1 s.d. t-24)",
+      "catatan": "Model non-recurrent sebagai pembanding utama untuk klaim bonus B1. Memberikan batas bawah performa yang dapat dicapai tanpa arsitektur sekuensial eksplisit."
+    },
+    {
+      "nama": "Linear Regression (Pooled)",
+      "peran": "pembanding",
+      "varian": "Ordinary Least Squares dengan fitur lag dan cyclic encoding untuk hour/minute",
+      "catatan": "Baseline statistik sederhana untuk mengisolasi kontribusi non-linearitas model. Membantu membedakan apakah peningkatan performa berasal dari kapasitas model atau sekadar penambahan fitur."
+    }
+  ],
+  "frameworks": [
+    {
+      "nama": "torch",
+      "versi": "2.1.0",
+      "kegunaan": "Implementasi arsitektur LSTM, custom training loop, fungsi loss MSE, dan mekanisme gradient clipping"
+    },
+    {
+      "nama": "xgboost",
+      "versi": "2.0.3",
+      "kegunaan": "Implementasi model baseline XGBoost Regressor untuk perbandingan komparatif (klaim bonus B1). Digunakan dengan API sklearn-compatible melalui xgboost.XGBRegressor."
+    },
+    {
+      "nama": "scikit-learn",
+      "versi": "1.3.2",
+      "kegunaan": "Normalisasi MinMaxScaler, train-test split kronologis, evaluasi metrik MAE/RMSE, dan implementasi baseline Linear Regression"
+    },
+    {
+      "nama": "pandas",
+      "versi": "2.1.4",
+      "kegunaan": "Manipulasi dataframe, parsing timestamp, handling missing value (interpolasi linear), dan pembentukan sliding window sequence"
+    },
+    {
+      "nama": "numpy",
+      "versi": "1.26.2",
+      "kegunaan": "Operasi numerik vektorisasi, perhitungan residual, dan normalisasi statistik untuk analisis edge case"
+    },
+    {
+      "nama": "matplotlib",
+      "versi": "3.8.2",
+      "kegunaan": "Visualisasi learning curve, plot residual terhadap waktu, dan perbandingan performa antar route"
+    }
+  ],
+  "datasets": [
+    {
+      "nama": "Taiwan Freeway Travel Time Dataset (MOTC-TDCS)",
+      "tipe": "publik",
+      "sumber": "Freeway Bureau, Ministry of Transportation and Communications (MOTC), Taiwan; subset tiga rute dari repositori TDCS",
+      "url_sumber_publik": "https://github.com/smalloshin/tdcs-dataset-tw",
+      "jumlah_sampel": 315360,
+      "jumlah_kelas": 0,
+      "proses_akuisisi_mandiri": "",
+      "peran_di_proyek": "Dataset utama untuk pelatihan, validasi, dan pengujian model Stacked LSTM serta model baseline (XGBoost & Regresi Linier). Menggunakan subset tiga rute dengan interval 5 menit sepanjang 2018 untuk prediksi jangka panjang (1 jam ke depan), iterasi model (Klaim B1), dan analisis edge case jam sibuk vs non-sibuk (Klaim B3).",
+      "spek_rl": null
+    }
+  ],
+  "metrik_utama": [
+    "Mean Absolute Error (MAE)",
+    "Root Mean Square Error (RMSE)",
+    "Training Loss (MSE)",
+    "Validation Loss (MSE)",
+    "R-squared (R\u00b2)"
+  ],
+  "klaim_bonus": [
+    "B1",
+    "B3"
+  ],
+  "anggota": [
+    {
+      "nama": "Grace Yunike Margaretha Sitorus",
+      "npm": "2306267031",
+      "peran_utama": "Data Engineer (Bab 3.1-3.2)",
+      "focus_area": [
+        "Eksplorasi Data Analisis (EDA)",
+        "Pembersihan data (Missing Values)",
+        "Transformasi deret waktu (Sliding Window)"
+      ],
+      "konsep_dikuasai_implementasi": [
+        "Manipulasi DataFrame menggunakan Pandas",
+        "Penanganan missing value menggunakan interpolasi linier",
+        "Pemotongan dataset berbasis waktu (Sliding window/Lookback window code)",
+        "Visualisasi distribusi deret waktu menggunakan Matplotlib/Seaborn"
+      ],
+      "konsep_dikuasai_teori": [
+        "Karakteristik sekuensial data spasiotemporal",
+        "Risiko kebocoran data (Data Leakage) pada prapemrosesan",
+        "Konsep lookback window dan horizon prediksi"
+      ],
+      "bagian_laporan": [
+        "Bab 3.1",
+        "Bab 3.2"
+      ],
+      "bagian_kode": [
+        "EDA and Preprocessing"
+      ]
+    },
+    {
+      "nama": "Isyana Trevia Pohaci",
+      "npm": "2306250592",
+      "focus_area": [
+        "Kajian literatur paper referensi",
+        "Penjelasan arsitektur Stacked LSTM",
+        "Penjelasan model baseline (XGBoost/Regresi Linier)"
+      ],
+      "konsep_dikuasai_implementasi": [
+        "Pemetaan arsitektur neural network dari referensi ke desain eksperimen",
+        "Analisis parameter dan struktur model referensi",
+        "Penyusunan diagram arsitektur prediksi sekuensial"
+      ],
+      "konsep_dikuasai_teori": [
+        "Mekanisme memori internal pada LSTM (Input, Forget, dan Output Gate)",
+        "Solusi Vanishing Gradient yang ditawarkan LSTM dibanding RNN standar",
+        "Kelebihan model sekuensial dibanding algoritma non-sekuensial (seperti XGBoost) pada data berderet"
+      ],
+      "bagian_laporan": [
+        "Bab 2.1",
+        "Bab 2.2",
+        "Bab 2.3"
+      ],
+      "bagian_kode": []
+    },
+    {
+      "nama": "Stevie Nathania Siregar",
+      "npm": "2306242382",
+      "peran_utama": "Penulis Bab 1",
+      "focus_area": [
+        "Definisi batasan masalah riset",
+        "Penyusunan rumusan masalah (Klaim B1 & B3)",
+        "Penetapan ruang lingkup dataset"
+      ],
+      "konsep_dikuasai_implementasi": [
+        "Ekstraksi informasi domain dari paper acuan",
+        "Formulasi batasan masalah pada pemodelan deret waktu"
+      ],
+      "konsep_dikuasai_teori": [
+        "Karakteristik sistem prediksi waktu tempuh jangka panjang (Long-term TTP)",
+        "Signifikansi variabilitas temporal pada jalan tol (Jam sibuk vs Non-sibuk)",
+        "Perbedaan konseptual antara regresi prediksi nilai waktu kontinu dengan klasifikasi"
+      ],
+      "bagian_laporan": [
+        "Bab 1.1",
+        "Bab 1.2",
+        "Bab 1.3"
+      ],
+      "bagian_kode": []
+    },
+    {
+      "nama": "Wiellona Darlene Oderia Saragih",
+      "npm": "2306264396",
+      "peran_utama": "ML Engineer & Penyusun Evaluasi (Bab 3.3-3.4)",
+      "focus_area": [
+        "Rencana pengujian & metrik",
+        "Training loop model awal",
+        "Manajemen metadata proyek"
+      ],
+      "konsep_dikuasai_implementasi": [
+        "Validasi format dan hierarki JSON (Metadata)",
+        "Pembuatan siklus pelatihan dasar (Training Loop) dengan PyTorch/Keras",
+        "Implementasi fungsi loss dan perhitungan metrik (MAE, RMSE) menggunakan library",
+        "Pemecahan data latih-uji berbasis kronologis (Chronological Split)"
+      ],
+      "konsep_dikuasai_teori": [
+        "Alasan pelarangan pengacakan data (No-Shuffling) saat data splitting deret waktu",
+        "Interpretasi dan perbedaan matematis antara MAE dan RMSE",
+        "Strategi evaluasi model pada subset kondisi spesifik (Edge case: Jam Sibuk)"
+      ],
+      "bagian_laporan": [
+        "Bab 3.3",
+        "Bab 3.4",
+        "Lampiran Metadata"
+      ],
+      "bagian_kode": [
+        "metadata.json",
+        "Model Training Awal"
+      ]
+    }
+  ],
+  "tautan": {
+    "github": "https://github.com/wiellona/taiwan-freeway-lstm",
+    "colab": "https://colab.research.google.com/drive/1Mt2gD14kkDGLvAPXNdeTkesB4iFJ4GnJ?usp=sharing",
+    "dataset_mandiri": null,
+    "video_demo": null
+  },
+  "ai_assistant_usage": {
+    "digunakan": true,
+    "tools": [
+      "GitHub Copilot (GPT-5.2-Codex)"
+    ],
+    "bagian": [
+      "Drafting Progress Report",
+      "Penyelarasan metadata.json"
+    ],
+    "estimasi_persentase": 15
+  }
+}
