@@ -24,9 +24,10 @@ def create_sequences(df, window=WINDOW_SIZE, horizon=HORIZON, features=FEATURES)
     values = df[features].values
     X, y, ts = [], [], []
     for i in range(window, len(values) - horizon):
+        target_idx = i + horizon - 1
         X.append(values[i - window : i])
-        y.append(values[i + horizon][0])
-        ts.append(df.iloc[i - 1]['Timestamp'])
+        y.append(values[target_idx][0])
+        ts.append(df.iloc[target_idx]['Timestamp'])
     return np.array(X), np.array(y), np.array(ts)
 
 def temporal_split(X, y, ts, train_r=TRAIN_RATIO, val_r=VAL_RATIO):

@@ -16,7 +16,10 @@ def evaluate_model(model, y_true, y_pred_scaled, scaler_y):
 
 def evaluate_peak_nonpeak(y_true, y_pred, timestamps):
     ts = pd.to_datetime(timestamps)
-    mask = ts.hour.isin([7, 8, 17, 18])
+
+    is_weekday = ts.dayofweek < 5
+    is_peak_hour = ts.hour.isin([7, 8, 17, 18])
+    mask = is_weekday & is_peak_hour
     def calc(m):
         if m.sum() == 0: return {'mae': 0, 'rmse': 0}
         return {'mae': mean_absolute_error(y_true[m], y_pred[m]),
